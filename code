@@ -1,0 +1,79 @@
+#include <iostream>
+using namespace std;
+
+const int ROWS = 6, COLS = 7;
+
+void displayBoard(char board[ROWS][COLS]) {
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "1 2 3 4 5 6 7\n";
+}
+
+bool dropPiece(char board[ROWS][COLS], int col, char player) {
+    for (int i = ROWS - 1; i >= 0; i--) {
+        if (board[i][col] == '.') {
+            board[i][col] = player;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkWin(char board[ROWS][COLS], char player) {
+    // Check horizontal, vertical, and diagonal wins
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            if (j + 3 < COLS && board[i][j] == player && board[i][j + 1] == player &&
+                board[i][j + 2] == player && board[i][j + 3] == player)
+                return true;
+            if (i + 3 < ROWS && board[i][j] == player && board[i + 1][j] == player &&
+                board[i + 2][j] == player && board[i + 3][j] == player)
+                return true;
+            if (i + 3 < ROWS && j + 3 < COLS && board[i][j] == player &&
+                board[i + 1][j + 1] == player && board[i + 2][j + 2] == player &&
+                board[i + 3][j + 3] == player)
+                return true;
+            if (i - 3 >= 0 && j + 3 < COLS && board[i][j] == player &&
+                board[i - 1][j + 1] == player && board[i - 2][j + 2] == player &&
+                board[i - 3][j + 3] == player)
+                return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    char board[ROWS][COLS];
+    for (int i = 0; i < ROWS; i++) 
+        for (int j = 0; j < COLS; j++) 
+            board[i][j] = '.';
+
+    char currentPlayer = 'X';
+    while (true) {
+        displayBoard(board);
+        cout << "Player " << currentPlayer << ", choose a column (1-7): ";
+        int col;
+        cin >> col;
+        col--; // Adjust for 0-indexing
+
+        if (col < 0 || col >= COLS || !dropPiece(board, col, currentPlayer)) {
+            cout << "Invalid move. Try again.\n";
+            continue;
+        }
+
+        if (checkWin(board, currentPlayer)) {
+            displayBoard(board);
+            cout << "Player " << currentPlayer << " wins!\n";
+            break;
+        }
+
+        // Switch players
+        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+    }
+
+    return 0;
+}
